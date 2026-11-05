@@ -1,0 +1,24 @@
+# 运行产物：保留 TensorBoard 事件日志（复现报告要能溯源到日志），
+# 但模型权重和视频不进仓库。
+runs/*/dqn.cleanrl_model*
+videos/
+wandb/
+
+# 模型权重 / 检查点（任务书禁止提交 checkpoint，单文件 >50MB 也禁止）
+*.th
+*.pt
+*.pth
+*.ckpt
+
+# 数据集与 Atari ROM（ROM 是版权物，不得提交）
+data/
+*.bin
+
+# Python / 编辑器
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+
+# 编辑器
+.vscode/

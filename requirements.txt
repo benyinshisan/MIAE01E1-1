@@ -1,0 +1,16 @@
+# Colab 免费层 / 任意 Python 3.12 环境的依赖。
+#
+# ⚠️ 这里故意不装 torch：Colab 预装带 CUDA 的 torch，重复安装会冲突。
+#    本机（conda）请用 environment.yml。
+#
+# ⚠️ 不要装 gym==0.23.1 / AutoROM：
+#    - gym 0.23.1 依赖 distutils，Python 3.11+ 装不上；
+#    - ale-py>=0.10 已随包分发 Atari ROM（108 个），不需要 AutoROM 下载。
+#
+# 安装：python -m pip install -r requirements.txt
+
+gymnasium==1.0.0
+ale-py==0.10.1
+numpy>=2,<3
+opencv-python-headless==5.0.0.93
+tensorboard==2.21.0

@@ -1,0 +1,18 @@
+name: miae01-dqn
+# 与 Colab 免费层共用同一套 ALE 栈（见同目录 requirements.txt）。
+# 本地用本文件（conda + pip），Colab 用 requirements.txt。
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      # --- 已验证的核心 ALE 栈（Python 3.12.16 / numpy 2.5.4 实测通过）---
+      - gymnasium==1.0.0
+      - ale-py==0.10.1        # ROM 已随包分发（108 个，672 KB），无需 AutoROM
+      - numpy==2.5.4
+      - opencv-python-headless==5.0.0.93   # gymnasium 的 ResizeObservation 需要
+      - tensorboard==2.21.0
+      # --- 训练用；Colab 自带 CUDA 版，不要写进 requirements.txt ---
+      - torch==2.4.1
