@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "miae01-dqn"
+version = "0.1.0"
+description = "Replication of Mnih et al. (2015) - MIAE01 course project"
+requires-python = ">=3.12"
+
+# Dependencies are intentionally NOT declared here: environment.yml is the single
+# source of truth (see README section 2).
+
+[tool.setuptools.packages.find]
+include = ["miae01_dqn*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

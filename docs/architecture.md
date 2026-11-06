@@ -1,7 +1,8 @@
 # DQN 复现工程：架构与接口契约
 
 - 状态：草案（模块划分、接口契约、环境版本已定；配置命名、评测口径、包结构待定）
-- 接口代码：[`prototype/interfaces.py`](../prototype/interfaces.py)（只有签名，无说明）
+- 接口代码：[`miae01_dqn/`](../miae01_dqn/)（八个模块，函数体为 `NotImplementedError`）
+- 包配置：[`pyproject.toml`](../pyproject.toml)（可 `pip install -e .` 安装）
 - 论文规格来源：Mnih et al., *Human-level control through deep reinforcement learning*, Nature 518:529–533, 2015
 - 决策记录：ADR-0007（主线改为 DQN 并完全自写）
 

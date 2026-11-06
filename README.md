@@ -13,7 +13,7 @@ We reproduce the paper's central claim on a **reduced scale** (one game, 10M fra
 | Part | State |
 |---|---|
 | Environment (`environment.yml`, `requirements.txt`) | ✅ done, verified on Python 3.12 |
-| Interface contract (`prototype/interfaces.py`) | ✅ done |
+| Package skeleton (`miae01_dqn/`, `pyproject.toml`) | ✅ done — importable, `pytest` green |
 | Architecture & invariants (`docs/architecture.md`) | ✅ done |
 | Module implementation (`miae01_dqn/`) | 🚧 in progress — see Issues |
 | Smoke run / main experiment | ⏳ after implementation |
@@ -65,6 +65,36 @@ python -m pip install -r requirements.txt
 `requirements.txt` deliberately **does not install PyTorch**: Colab ships a CUDA build. Locally, `environment.yml` pins `torch==2.4.1`.
 
 Verified combination: Python 3.12.16, `gymnasium==1.0.0`, `ale-py==0.10.1`, `numpy==2.5.4`.
+
+Then install this repository as an **editable** package. This is the step that makes
+`import miae01_dqn` and `python -m miae01_dqn.runner` work from any directory:
+
+```bash
+python -m pip install -e .
+```
+
+### Option C — Colab (free tier)
+
+```python
+!git clone https://github.com/benyinshisan/MIAE01E1-1.git
+%cd MIAE01E1-1
+!pip install -q -r requirements.txt
+!pip install -q -e .
+!python -m miae01_dqn.runner --smoke
+```
+
+### Editing the code after installation
+
+`pip install -e .` is an *editable* install: the entry in `site-packages` is a link to this
+source tree, so changes to `.py` files take effect on the next run — **no reinstall needed**.
+Reinstall only when `pyproject.toml` changes (metadata, package layout).
+
+To confirm you are running the editable copy rather than a stale installed one:
+
+```bash
+python -c "import miae01_dqn; print(miae01_dqn.__file__)"
+# the path must be inside this repository, not under site-packages/
+```
 
 ---
 
@@ -123,19 +153,25 @@ Memory: the replay buffer stores one `uint8` array of shape `(capacity, 4, 84, 8
 
 ```text
 .
-├── prototype/
-│   └── interfaces.py        # the contract: signatures only, no implementation
+├── miae01_dqn/              # the package (8 modules, one per interface unit)
+│   ├── __init__.py          # public exports + __version__
+│   ├── config.py            # EnvSpec / OptimSpec / AlgoSpec / EvalSpec / RunSpec / RunConfig
+│   ├── envs.py              # EnvFactory, EnvHandle
+│   ├── buffer.py            # ReplayBuffer, TransitionBatch (numpy only)
+│   ├── network.py           # QNetwork (paper CNN)
+│   ├── agent.py             # Agent (act / update / sync_target)
+│   ├── trainer.py           # Trainer, TrainResult (step-driven loop)
+│   ├── evaluator.py         # Evaluator, EvalResult (30-episode protocol)
+│   └── runner.py            # Logger, build_config, run_experiment, CLI entry
+├── tests/                   # cross-validation tests (written by a non-implementer)
 ├── docs/
 │   └── architecture.md      # module boundaries, invariants, paper-default table
-├── environment.yml          # conda environment (local, CPU)
-├── requirements.txt         # pip-only environment (Colab)
+├── pyproject.toml           # editable install + pytest config
+├── environment.yml          # conda environment (single source of truth)
+├── requirements.txt         # pip-only mirror (Colab)
+├── THIRD_PARTY_NOTICES.md   # upstream licences
 ├── .gitignore
 └── .gitattributes
-
-# planned, added as issues close:
-# miae01_dqn/   config.py envs.py buffer.py network.py agent.py trainer.py evaluator.py runner.py
-# tests/        cross-validation tests (written by a member who did not implement the module)
-# reference/    upstream files kept for comparison, with their original licenses
 ```
 
 Module dependency direction (enforced):
