@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: miae01-dqn
+Version: 0.1.0
+Summary: Replication of Mnih et al. (2015) - MIAE01 course project
+Requires-Python: >=3.12

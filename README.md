@@ -54,6 +54,13 @@ Normalization: `100 × (ours − random) / (human − random)`.
 ```bash
 conda env create -f environment.yml
 conda activate miae01-dqn
+`
+
+On a machine without an NVIDIA GPU, install the CPU build of PyTorch instead of the
+default CUDA wheel (~200 MB instead of ~2.4 GB):
+
+`ash
+pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
 ```
 
 ### Option B — Colab (free tier) / any Python 3.12 environment
