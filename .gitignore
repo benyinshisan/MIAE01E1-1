@@ -22,3 +22,8 @@ __pycache__/
 
 # 编辑器
 .vscode/
+
+# 打包产物（pip install -e . 会生成）
+*.egg-info/
+build/
+dist/
