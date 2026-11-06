@@ -272,16 +272,27 @@ Full license texts and per-file provenance: **`THIRD_PARTY_NOTICES.md`**.
 | | | |
 | | | |
 
-> Fill in before the final submission; must be consistent with the git history.
+> Fill in before the final submission. This table must agree with **both** the git history
+> and the contribution statement in the Final Report — the repository criterion
+> Individual Contributions is assessed on that agreement.
 
 ---
 
-## 12. AI usage statement
+## 12. AI usage statement — required in the Final Report, not here
 
-AI assistance was used for: repository scaffolding and environment setup, code review of the reference implementation, drafting of this README and the architecture document, and analysis of training logs. All experimental results reported in the final report are produced by the code in this repository and are traceable to the logs committed here.
+The course requires an **AI usage statement inside the Final Report**
+(Writing Quality 10%). It is **not** a repository criterion, so this README only points
+to the draft: [docs/report-statements.md](docs/report-statements.md).
+
+The same file also holds the draft contribution statement, which must stay consistent
+with the table above and with the git history.
 
 ---
 
-## 13. Acknowledgements
+## 13. Acknowledgements (optional, not graded)
 
-Course material and repository template by Prof. Xie Xuan (MUST). Reference implementation by the cleanrl authors; Atari wrappers and replay-buffer design by the Stable-Baselines3 authors.
+Not required by the course; kept for courtesy only.
+
+Course material and repository template by Prof. Xie Xuan (MUST). Reference implementation
+by the cleanrl authors; Atari wrappers and replay-buffer design by the Stable-Baselines3
+authors.
