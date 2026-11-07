@@ -14,9 +14,9 @@ dependencies:
       - numpy==2.5.4
       - opencv-python-headless==5.0.0.93   # gymnasium 的 ResizeObservation 需要
       - tensorboard==2.21.0
-      # --- 训练用；Colab 自带 CUDA 版，不要写进 requirements.txt ---
-      # 无 GPU 的机器建议改用 CPU 轮子（约 200 MB，避免拉 2.4 GB 的 CUDA 包）：
-      #   pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
-      - torch==2.4.1
+      # --- torch 故意不写在这里 ---
+      # 装哪个轮子取决于机器，装完环境后手动执行一次：
+      #   无 GPU：pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+      #   有 CUDA：pip install torch==2.4.1
       # --- 测试用 ---
       - pytest==9.2.0

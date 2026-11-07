@@ -8,17 +8,16 @@ We reproduce the paper's central claim on a **reduced scale** (one game, 10M fra
 
 ## Status
 
-> **This repository is in the implementation phase.** The interface contract and environment are complete; the modules themselves are being written.
+> **This repository is in the implementation phase.** The package skeleton and the environment are complete; the modules themselves are being written.
 
 | Part | State |
 |---|---|
-| Environment (`environment.yml`, `requirements.txt`) | ✅ done, verified on Python 3.12 |
+| Environment — conda (`environment.yml`) | ✅ verified from a clean environment (Python 3.12.16, Windows, CPU build) |
+| Environment — Colab (`requirements.txt`) | ⚠️ prepared, **not verified** |
 | Package skeleton (`miae01_dqn/`, `pyproject.toml`) | ✅ done — importable, `pytest` green |
 | Architecture & invariants (`docs/architecture.md`) | ✅ done |
 | Module implementation (`miae01_dqn/`) | 🚧 in progress — see Issues |
 | Smoke run / main experiment | ⏳ after implementation |
-
-Run commands in this README describe the **target interface**. They become usable as the corresponding issues close; anything not yet runnable is marked `[pending]`.
 
 ---
 
@@ -41,7 +40,7 @@ Normalization: `100 × (ours − random) / (human − random)`.
 
 **Verdict rule we pre-registered:** above 9.3 → *supported*; positive but below 9.3 → *partially supported*; fails to learn → *not supported*.
 
-**Not reproduced:** generality across 49 games (hardware-limited; see §8 Deviations).
+**Not reproduced:** generality across 49 games (hardware-limited; recorded in the report's Deviations table).
 
 **Extension (one factor):** replay capacity ablation at 50k / 100k / 200k, used as evidence when explaining the gap to the paper.
 
@@ -49,45 +48,33 @@ Normalization: `100 × (ours − random) / (human − random)`.
 
 ## 2. Quick start
 
-### Option A — conda (local, CPU)
+### Option A — conda (the only verified path)
 
 ```bash
 conda env create -f environment.yml
 conda activate miae01-dqn
-`
-
-On a machine without an NVIDIA GPU, install the CPU build of PyTorch instead of the
-default CUDA wheel (~200 MB instead of ~2.4 GB):
-
-`ash
-pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
 ```
 
-### Option B — Colab (free tier) / any Python 3.12 environment
+`environment.yml` intentionally does **not** install PyTorch, because the right wheel depends on
+the hardware. Install it once, with the build that matches your machine:
 
 ```bash
-python -m pip install -r requirements.txt
+# CPU-only machine (~200 MB) — this is what we develop on
+pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+
+# CUDA machine (~2.4 GB)
+pip install torch==2.4.1
 ```
 
-`requirements.txt` deliberately **does not install PyTorch**: Colab ships a CUDA build. Locally, `environment.yml` pins `torch==2.4.1`.
+Verified combination: Python 3.12.16, `gymnasium==1.0.0`, `ale-py==0.10.1`, `numpy==2.5.4`, `torch==2.4.1+cpu`.
 
-Verified combination: Python 3.12.16, `gymnasium==1.0.0`, `ale-py==0.10.1`, `numpy==2.5.4`.
+### Install the package
 
-Then install this repository as an **editable** package. This is the step that makes
-`import miae01_dqn` and `python -m miae01_dqn.runner` work from any directory:
+This step makes `import miae01_dqn` and `python -m miae01_dqn.runner` work from any directory:
 
 ```bash
 python -m pip install -e .
-```
-
-### Option C — Colab (free tier)
-
-```python
-!git clone https://github.com/benyinshisan/MIAE01E1-1.git
-%cd MIAE01E1-1
-!pip install -q -r requirements.txt
-!pip install -q -e .
-!python -m miae01_dqn.runner --smoke
+python -m pytest -q          # expected: 3 passed
 ```
 
 ### Editing the code after installation
@@ -103,45 +90,26 @@ python -c "import miae01_dqn; print(miae01_dqn.__file__)"
 # the path must be inside this repository, not under site-packages/
 ```
 
----
+### Colab — prepared, **not verified**
 
-## 3. Data and ROMs — nothing to download
+> The Colab path has **not** been tested. Only the conda path above is verified.
+> Treat the commands below as a starting point, not a guarantee.
 
-The Atari ROMs are **bundled inside the `ale-py` wheel** (`ale_py/roms`, 108 ROM files, 672 KB total), so no `AutoROM`, no ROM download step and no licensed binary is stored in this repository.
-
-Environment ids: we use **`ALE/Pong-v5`** and must pass **`frameskip=1`** explicitly — the v5 default is 4, which would compound with our `MaxAndSkip(4)` wrapper into 16 frames per agent action.
-
----
-
-## 4. Run commands
-
-All commands are run from the repository root. `[pending]` marks commands that require modules still under construction.
-
-```bash
-# Smoke test: 5,000 agent steps, ~1 minute, writes logs to runs/
-[pending] python -m miae01_dqn.runner --smoke
-
-# Main experiment: Pong, 3 seeds, 2.5M agent steps each
-[pending] python -m miae01_dqn.runner --env-id ALE/Pong-v5 --seeds 1 2 3 \
-              --total-agent-steps 2500000 --replay-capacity 200000
-
-# Extension: replay-capacity ablation
-[pending] python -m miae01_dqn.runner --env-id ALE/Pong-v5 --seeds 1 2 3 \
-              --total-agent-steps 2500000 --replay-capacity 50000
-[pending] python -m miae01_dqn.runner --env-id ALE/Pong-v5 --seeds 1 2 3 \
-              --total-agent-steps 2500000 --replay-capacity 100000
-
-# Evaluation of a finished run
-[pending] python -m miae01_dqn.evaluator --run-dir runs/<run_name> --episodes 30
+```python
+!git clone https://github.com/benyinshisan/MIAE01E1-1.git
+%cd MIAE01E1-1
+!pip install -q -r requirements.txt
+!pip install -q -e .
+!python -m pytest -q
 ```
 
-Seed handling: every run is identified by `env_id`, `seed` and the key hyperparameters, and the seed is propagated to the environment, NumPy, `random`, PyTorch and cuDNN.
+`requirements.txt` omits PyTorch because Colab already ships a CUDA build.
 
 ---
 
-## 5. Expected outputs and runtimes
+## 3. Expected outputs and runtimes
 
-Each run writes to `runs/<env_id>__<seed>__<tag>__<timestamp>/`:
+When the implementation lands, each run will write to `runs/<env_id>__<seed>__<tag>__<timestamp>/`:
 
 | Artifact | Content |
 |---|---|
@@ -150,13 +118,13 @@ Each run writes to `runs/<env_id>__<seed>__<tag>__<timestamp>/`:
 | `result.json` | final evaluation: per-episode scores, mean, std, normalized score |
 
 Measured throughput on the development machine (CPU-only, no CUDA device available): **≈273 agent steps/s**.
-At that rate a 2.5M-step run takes **≈2.3 h per seed**; three seeds ≈ 7 h. A 5k-step smoke run takes under a minute.
+At that rate a 2.5M-step run would take **≈2.3 h per seed**; three seeds ≈ 7 h. A 5k-step smoke run takes under a minute.
 
 Memory: the replay buffer stores one `uint8` array of shape `(capacity, 4, 84, 84)`, i.e. **≈5.6 GB at 200k**. The paper's 1M capacity would need ≈28 GB and is not feasible here.
 
 ---
 
-## 6. Repository layout
+## 4. Repository layout
 
 ```text
 .
@@ -175,7 +143,7 @@ Memory: the replay buffer stores one `uint8` array of shape `(capacity, 4, 84, 8
 │   └── architecture.md      # module boundaries, invariants, paper-default table
 ├── pyproject.toml           # editable install + pytest config
 ├── environment.yml          # conda environment (single source of truth)
-├── requirements.txt         # pip-only mirror (Colab)
+├── requirements.txt         # pip-only mirror (any Python 3.12 environment)
 ├── THIRD_PARTY_NOTICES.md   # upstream licences
 ├── .gitignore
 └── .gitattributes
@@ -192,57 +160,25 @@ runner → trainer → agent → network
 
 ---
 
-## 7. Paper configuration (defaults)
+## 5. Reproducibility notes
 
-Values are taken from the paper (Methods and Extended Data Table 1) and are the defaults of `RunConfig`.
-
-| Parameter | Paper value |
-|---|---|
-| Optimizer | RMSProp, lr 2.5e-4, momentum 0.95, squared-gradient momentum 0.95, ε 0.01 |
-| Loss | TD error **clipped to [−1, 1]** (no gradient-norm clipping) |
-| Discount γ | 0.99 |
-| Minibatch | 32 |
-| Replay capacity | 1,000,000 frames |
-| Replay start size | 50,000 frames |
-| Update frequency | every 4 agent actions |
-| Target sync | every **10,000 parameter updates** (≈160,000 frames) |
-| Exploration | ε 1.0 → 0.1 linearly over the first **1,000,000 frames**, then fixed 0.1 |
-| Action repeat | 4 |
-| Frame stack | 4 × 84×84 grayscale |
-| Reward clipping | [−1, +1] during training; raw scores at evaluation |
-| Evaluation | 30 episodes, ≤5 min each, random no-op starts, ε = 0.05 |
-
-> Three units are easy to confuse: **frames**, **agent steps** and **parameter updates**. The target-sync interval is counted in parameter updates; the ε schedule is counted in frames.
-
----
-
-## 8. Deviations from the paper
-
-| Item | Paper | Ours | Reason |
-|---|---|---|---|
-| Games | 49 | 1 (Pong) | CPU-only machine; 49 × 3 seeds is not feasible |
-| Training budget | 50M frames | 10M frames (2.5M agent steps) | ~2.3 h/seed at 273 steps/s |
-| Replay capacity | 1,000,000 | 200,000 | memory: 1M would need ≈28 GB |
-| Hardware | GPU (reported as 38 days of game experience) | CPU only, no CUDA device | available hardware |
-| Evaluation interval | not stated for the main results | every 1M frames | **our assumption**, declared in the report's Limitations |
-| Reported checkpoint | not stated for the main results | final model | **our assumption**, same reason |
-| Optimizer / loss | RMSProp / TD error clipped | same | no deviation |
-
----
-
-## 9. Reproducibility notes
-
-- **Package versions are pinned** in `environment.yml` and `requirements.txt`.
-- **No hard-coded paths**: all paths are derived from `RunConfig.log_dir` and relative paths; the repository is checked for absolute paths in the cross-validation tests.
+- **Package versions are pinned** in `environment.yml` and `requirements.txt`; PyTorch is installed
+  separately because the build depends on the hardware.
+- **No hard-coded paths**: all paths are derived from `RunConfig.log_dir` and relative paths; the
+  repository is checked for absolute paths in the cross-validation tests.
 - **Seeds are fixed** per run and recorded in `config.json`.
-- **Device is configurable** (`--device cpu|cuda`); results on CPU and GPU are not expected to be bit-identical (cuDNN non-determinism).
-- Colab free tier has 12.7 GB RAM; 200k replay ≈ 5.6 GB, so runs fit but with little headroom.
+- **Device is configurable** (`--device cpu|cuda`); results on CPU and GPU are not expected to be
+  bit-identical (cuDNN non-determinism).
+- Atari ROMs are bundled inside the `ale-py` wheel, so no ROM download step is required.
 
 ---
 
-## 10. Starting code, credits and license
+## 6. Starting code, credits and license
 
-The paper's original implementation was never publicly released: the "Code availability" note (Methods, p. 6) points to `sites.google.com/a/deepmind.com/dqn`, which now redirects to a DeepMind Google Workspace sign-in and is not publicly accessible. The course therefore lists a reference implementation.
+The paper's original implementation was never publicly released: the "Code availability" note
+(Methods, p. 6) points to `sites.google.com/a/deepmind.com/dqn`, which now redirects to a
+DeepMind Google Workspace sign-in and is not publicly accessible. The course therefore lists a
+reference implementation.
 
 | Component | Source | Commit / version | License |
 |---|---|---|---|
@@ -261,38 +197,3 @@ Full license texts and per-file provenance: **`THIRD_PARTY_NOTICES.md`**.
 | `miae01_dqn/agent.py` | paper, Methods | written for this replication: RMSProp, TD-error clipping, target sync counted in updates |
 | `miae01_dqn/trainer.py` | paper, Algorithm 1 | written for this replication: step-driven loop, truncation handling |
 | `miae01_dqn/{config,network,evaluator,runner}.py` | paper | written for this replication |
-
----
-
-## 11. Team and contributions
-
-| Member | Student ID | Contributions |
-|---|---|---|
-| | | |
-| | | |
-| | | |
-
-> Fill in before the final submission. This table must agree with **both** the git history
-> and the contribution statement in the Final Report — the repository criterion
-> Individual Contributions is assessed on that agreement.
-
----
-
-## 12. AI usage statement — required in the Final Report, not here
-
-The course requires an **AI usage statement inside the Final Report**
-(Writing Quality 10%). It is **not** a repository criterion, so this README only points
-to the draft: [docs/report-statements.md](docs/report-statements.md).
-
-The same file also holds the draft contribution statement, which must stay consistent
-with the table above and with the git history.
-
----
-
-## 13. Acknowledgements (optional, not graded)
-
-Not required by the course; kept for courtesy only.
-
-Course material and repository template by Prof. Xie Xuan (MUST). Reference implementation
-by the cleanrl authors; Atari wrappers and replay-buffer design by the Stable-Baselines3
-authors.

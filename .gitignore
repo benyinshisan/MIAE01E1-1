@@ -32,3 +32,6 @@ dist/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+# 报告声明草稿（只在本地，不进仓库）
+docs/report-statements.md
