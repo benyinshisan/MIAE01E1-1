@@ -40,7 +40,7 @@ Normalization: `100 × (ours − random) / (human − random)`.
 
 **Verdict rule we pre-registered:** above 9.3 → *supported*; positive but below 9.3 → *partially supported*; fails to learn → *not supported*.
 
-**Not reproduced:** generality across 49 games (hardware-limited; recorded in the report's Deviations table).
+**Not reproduced:** generality across 49 games (hardware-limited; every deviation from the paper, with the reason, is listed in [`docs/deviations.md`](docs/deviations.md)).
 
 **Extension (one factor):** replay capacity ablation at 50k / 100k / 200k, used as evidence when explaining the gap to the paper.
 
@@ -140,7 +140,8 @@ Memory: the replay buffer stores one `uint8` array of shape `(capacity, 4, 84, 8
 │   └── runner.py            # Logger, build_config, run_experiment, CLI entry
 ├── tests/                   # cross-validation tests (written by a non-implementer)
 ├── docs/
-│   └── architecture.md      # module boundaries, invariants, paper-default table
+│   ├── architecture.md      # module boundaries, invariants, paper-default table
+│   └── deviations.md        # every deviation from the paper, with reasons
 ├── pyproject.toml           # editable install + pytest config
 ├── environment.yml          # conda environment (single source of truth)
 ├── requirements.txt         # pip-only mirror (any Python 3.12 environment)

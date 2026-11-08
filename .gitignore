@@ -35,3 +35,6 @@ dist/
 
 # 报告声明草稿（只在本地，不进仓库）
 docs/report-statements.md
+
+# 本地验证脚本（不入库）
+scripts/
