@@ -39,6 +39,10 @@ runner ──→ trainer ──→ agent ──→ network
 
 ## 3. 三套计数单位
 
+本节是项目冻结的计数契约。论文表述、公开 Torch7 代码与本契约存在口径差别，
+尤其是预热、探索和 target 时钟；详见 [`paper-code-audit.md`](paper-code-audit.md)。
+本次实验沿用本节，不能据此声称与公开原版代码的时间表完全相同。
+
 论文里 frame / step / update 是三套不同的计数，混用会静默出错：
 
 | 量 | 含义 | 换算 |
@@ -165,7 +169,7 @@ for step in range(total_agent_steps):
 - Colab 免费层：内存 12.7 GB，200k 容量 buffer 占 5.6 GB；device 不可写死；
   GPU 上数字与 CPU 不完全可比，需在报告中说明。
 
-## 7. 默认值即论文规格
+## 7. 论文数值与项目计数约定
 
 | 字段 | 值 | 出处 |
 |---|---|---|

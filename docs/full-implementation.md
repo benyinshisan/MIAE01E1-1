@@ -70,6 +70,11 @@ in `architecture.md`; no claim of bitwise equivalence to the historical system
 is made. SB3/CleanRL default optimizer, exploration and clipping choices are
 not used as the specification.
 
+The separate [paper/code audit](paper-code-audit.md) records the released
+implementation's different warm-up, exploration and target clocks, and the
+project's non-uniform warm-up. The current run preserves the project contract;
+matching the optimizer does not imply matching all historical schedules.
+
 ## Integration fixes and preserved behavior
 
 - Evaluator receives raw rewards; training retains sign clipping and raw-reward

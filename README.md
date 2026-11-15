@@ -2,7 +2,7 @@
 
 Replication of **Mnih et al., "Human-level control through deep reinforcement learning", *Nature* 518:529–533 (2015)**, for the course *MIAE01 — Programming and Tools for Machine Learning* (MUST, AY 2026–2027).
 
-We reproduce the paper's central claim on a **reduced scale** (one game, 10M frames instead of 49 games, 50M frames) and report a Paper-vs-Ours comparison together with the deviations that explain the gap.
+We test the paper's central claim on a **reduced scale**: one game, 2.5M agent decisions (10M nominal raw frames). Results are reported with the deviations and counting conventions that limit the comparison; see the [paper/code audit](docs/paper-code-audit.md).
 
 ---
 

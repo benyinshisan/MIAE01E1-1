@@ -27,6 +27,10 @@ review, then explicitly requested finishing the complete local GPU experiment.
   added the allowed zero-epsilon edge protection without changing the default
   experiment. The final regression suite passed 60 tests in 34.83 seconds in
   the clean environment. The teammate's unmerged branch remains untouched.
+- Cross-checked the official paper's rendered Extended Data Table 1 against
+  the public Torch7 driver and learner. Documented counting differences and
+  the project's non-uniform warm-up in `paper-code-audit.md`; preserved the
+  frozen experiment rather than changing its schedule mid-run.
 
 The full-run numerical results and review link are recorded after completion in
 `validation.md` and the final PR. No main-branch merge is performed by this task.
