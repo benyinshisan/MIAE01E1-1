@@ -315,7 +315,8 @@ class EnvFactory:
             frameskip=spec.frameskip,
             repeat_action_probability=spec.repeat_action_probability,
         )
-        env = NoopReset(env, spec.noop_max)
+        if spec.noop_max:
+            env = NoopReset(env, spec.noop_max)
         if spec.max_and_skip:
             env = MaxAndSkip(env, spec.action_repeat)
         if episodic_life and spec.episodic_life:
