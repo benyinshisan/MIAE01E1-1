@@ -42,6 +42,10 @@ class QNetwork(nn.Module):
             nn.Linear(512, n_actions),
         )
 
+    @property
+    def n_actions(self) -> int:
+        return self.q_head[-1].out_features
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = x.to(dtype=torch.float32) / 255.0
         return self.q_head(self.features(x))
