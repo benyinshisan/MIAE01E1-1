@@ -38,7 +38,9 @@ class NatureRMSprop(torch.optim.Optimizer):
                 mean, square = state['mean'], state['square']
                 mean.mul_(group['momentum']).add_(grad, alpha=1 - group['momentum'])
                 square.mul_(group['alpha']).addcmul_(grad, grad, value=1 - group['alpha'])
-                denominator = (square - mean.square()).clamp_min_(0).add_(group['eps']).sqrt_()
+                # Config permits eps=0; unused weights must not perform 0/0.
+                eps = group['eps'] or torch.finfo(p.dtype).tiny
+                denominator = (square - mean.square()).clamp_min_(0).add_(eps).sqrt_()
                 p.addcdiv_(grad, denominator, value=-group['lr'])
         return loss
 
@@ -64,7 +66,8 @@ class Agent:
             self.optimizer = NatureRMSprop(self.policy.parameters(), lr=optim.lr,
                 momentum=optim.momentum, alpha=optim.alpha, eps=optim.eps)
         else:
-            self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=optim.lr, eps=optim.eps)
+            self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=optim.lr,
+                eps=optim.eps or torch.finfo(torch.float32).tiny)
 
     def act(self, obs: np.ndarray, epsilon: float) -> int:
         if not 0 <= epsilon <= 1:

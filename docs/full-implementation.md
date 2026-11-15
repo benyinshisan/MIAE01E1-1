@@ -93,6 +93,22 @@ regression tests in this branch were authored alongside the implementation;
 they are available for teammates to review and independently reproduce. They
 must not be described as satisfying the independent-author condition already.
 
+### Concurrent Agent PR
+
+During the full experiment, PR #20 was merged as `e423765` and the team opened
+[Agent PR #22](https://github.com/benyinshisan/MIAE01E1-1/pull/22), inspected at
+head `73a54c2`. Its `torch.optim.RMSprop` uses uncentered second moments, velocity
+momentum and epsilon outside the square root, with batch-mean gradients.
+Those choices differ from the historical equations documented above. This
+completion branch submits its independently implemented Agent for review;
+it does not alter or close the teammate's unmerged PR. Reviewers should resolve
+the overlapping Agent implementations explicitly before merging.
+
+PR #22 also highlighted the allowed `eps=0` boundary: zero gradients must not
+produce `0/0`. This branch uses the dtype's smallest positive normal value only
+when epsilon is zero, with regression tests for both optimizer choices. The
+paper-default `eps=0.01` computation and the running full experiment are unchanged.
+
 The new implementation and smoke evidence are engineering verification. Only
 the full experiment's saved results can support the subsequent score discussion;
 neither random-policy acceptance nor passing tests establishes above-human DQN.

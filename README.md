@@ -59,7 +59,7 @@ conda activate miae01-dqn
 the hardware. Install it once, with the build that matches your machine:
 
 ```bash
-# CPU-only machine (~200 MB) — this is what we develop on
+# CPU-only machine (~200 MB)
 pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
 
 # CUDA machine (~2.4 GB)
@@ -110,7 +110,7 @@ python -c "import miae01_dqn; print(miae01_dqn.__file__)"
 
 ## 3. Expected outputs and runtimes
 
-When the implementation lands, each run will write to `runs/<env_id>__<seed>__<tag>__<timestamp>/`:
+Each run writes to `runs/<env_id>__seed<seed>__cap<capacity>__<timestamp>/` by default:
 
 | Artifact | Content |
 |---|---|

@@ -22,6 +22,11 @@ review, then explicitly requested finishing the complete local GPU experiment.
 - Initial full run was interrupted by Windows denying replacement of a JSON
   progress file. Added bounded retry and a deterministic regression test. The
   failed attempt's logs remain separate from the restarted full seed.
+- Confirmed PR #20 merged into main as `e423765`. Reviewed the concurrently
+  opened Agent PR #22 (`73a54c2`), documented the optimizer differences, and
+  added the allowed zero-epsilon edge protection without changing the default
+  experiment. The final regression suite passed 60 tests in 34.83 seconds in
+  the clean environment. The teammate's unmerged branch remains untouched.
 
 The full-run numerical results and review link are recorded after completion in
 `validation.md` and the final PR. No main-branch merge is performed by this task.

@@ -16,6 +16,11 @@ PYTHONPATH, the complete suite passed **58 tests in 35.13 seconds**. Verified
 versions: Python 3.12.16, torch 2.4.1+cpu, NumPy 2.5.4, Gymnasium 1.0.0. This
 provides the clean-install evidence requested by Issue #13.
 
+After adding the zero-epsilon boundary tests identified while reviewing the
+concurrent Agent PR #22, the same clean environment passed **60 tests in
+34.83 seconds**, again without skips or expected failures. The paper-default
+optimizer calculation is unchanged.
+
 The new environment also completed `--smoke --seed 1 --device cpu`: 5,000 steps,
 1,187 updates, 5 completed episodes, training wall time 69.17 seconds, final
 logged 69.2 SPS, RSS 0.43 GiB, and all required output files. This CPU result was

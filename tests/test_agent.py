@@ -42,6 +42,18 @@ def test_centered_rmsprop_numeric_equation():
         assert p.item() == pytest.approx(expected, abs=1e-7)
 
 
+@pytest.mark.parametrize('kind', ['rmsprop', 'adam'])
+def test_zero_epsilon_and_zero_gradient_keep_parameters_finite(kind):
+    a = Agent(TinyNetwork(), ReplayBuffer(8, (1, 1, 1), seed=1),
+              AlgoSpec(batch_size=1), OptimSpec(kind=kind, eps=0), 'cpu', seed=1)
+    x = np.ones((1, 1, 1), np.uint8)
+    a.buffer.push(x, 0, 0, x, True)
+    assert a.update() == 0
+    for p in a.policy.parameters():
+        assert torch.isfinite(p).all()
+        assert torch.count_nonzero(p) == 0
+
+
 def test_td_clipping_gradient_target_mask_and_sync():
     a = agent()
     x = np.ones((1,1,1), np.uint8)
