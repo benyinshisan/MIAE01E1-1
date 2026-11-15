@@ -1,6 +1,7 @@
 # 运行产物：保留 TensorBoard 事件日志（复现报告要能溯源到日志），
 # 但模型权重和视频不进仓库。
 runs/*/dqn.cleanrl_model*
+runs/*/*.tmp
 videos/
 wandb/
 
