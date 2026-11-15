@@ -36,7 +36,7 @@ the end so the table is verifiably complete.
 
 | # | Item | Paper | Ours | Reason |
 |---|---|---|---|---|
-| C1 | Starting code | Original Torch7 implementation, never publicly released; the "Code availability" link now redirects to a DeepMind Workspace sign-in | **Written from scratch**; `cleanrl` @ `fe8d8a0` used as reference implementation | The course lists cleanrl as the reference. Atari wrapper and replay-buffer design are adapted from cleanrl / Stable-Baselines3 (MIT); see `THIRD_PARTY_NOTICES.md`. |
+| C1 | Starting code | Original Torch7 implementation available at google-deepmind/dqn; the earlier unpublished claim is superseded | **Written from scratch**; `cleanrl` @ `fe8d8a0` used as reference implementation | The course lists cleanrl as the reference. Atari wrapper and replay-buffer design are adapted from cleanrl / Stable-Baselines3 (MIT); see `THIRD_PARTY_NOTICES.md`. |
 | C2 | Code structure | Single research script | 8-module package (`miae01_dqn/`) | Three-person parallel work; module boundaries documented in `docs/architecture.md`. No effect on algorithm behaviour. |
 
 ## D. Settings confirmed identical to the paper (no deviation)
@@ -65,3 +65,8 @@ the end so the table is verifiably complete.
   report's **Analysis of Discrepancies**; the replay-capacity ablation (group A3) is the planned
   controlled experiment for that purpose.
 - When the implementation lands, replace "expected effect" remarks with measured values.
+
+
+## Integration update (2026-11-15)
+
+The earlier CPU-only hardware statements describe the original development machine. The integration work also uses an RTX 3080 Laptop GPU; recorded per-run environment metadata and timings take precedence for these runs. Scale remains one game, 200k replay capacity and 10M training frames. The centered RMSProp equations, reduction convention and smoke-only overrides are documented in [full-implementation.md](full-implementation.md). No training score is inferred from these configuration choices.

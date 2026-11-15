@@ -8,7 +8,7 @@ We reproduce the paper's central claim on a **reduced scale** (one game, 10M fra
 
 ## Status
 
-> **This repository is in the implementation phase.** The package skeleton and the environment are complete; the modules themselves are being written.
+> **All eight modules are implemented on the integration branch.** See [implementation and verification](docs/full-implementation.md) for commands, numerical details and review status.
 
 | Part | State |
 |---|---|
@@ -16,8 +16,8 @@ We reproduce the paper's central claim on a **reduced scale** (one game, 10M fra
 | Environment — Colab (`requirements.txt`) | ⚠️ prepared, **not verified** |
 | Package skeleton (`miae01_dqn/`, `pyproject.toml`) | ✅ done — importable, `pytest` green |
 | Architecture & invariants (`docs/architecture.md`) | ✅ done |
-| Module implementation (`miae01_dqn/`) | 🚧 in progress — see Issues |
-| Smoke run / main experiment | ⏳ after implementation |
+| Module implementation (`miae01_dqn/`) | Implemented; submitted for team review |
+| Smoke run / main experiment | Two 5k smoke runs verified; full-run evidence tracked in docs/validation.md |
 
 ---
 
@@ -74,7 +74,8 @@ This step makes `import miae01_dqn` and `python -m miae01_dqn.runner` work from 
 
 ```bash
 python -m pip install -e .
-python -m pytest -q          # expected: 3 passed
+python -m pip install -r requirements-test.txt
+python -m pytest -q
 ```
 
 ### Editing the code after installation
@@ -176,10 +177,7 @@ runner → trainer → agent → network
 
 ## 6. Starting code, credits and license
 
-The paper's original implementation was never publicly released: the "Code availability" note
-(Methods, p. 6) points to `sites.google.com/a/deepmind.com/dqn`, which now redirects to a
-DeepMind Google Workspace sign-in and is not publicly accessible. The course therefore lists a
-reference implementation.
+The original Torch7 implementation is publicly available at [google-deepmind/dqn](https://github.com/google-deepmind/dqn). This corrects the earlier claim based on the old Code availability redirect. We use the paper and its update equations as references; implementation and numerical choices are documented in [full-implementation.md](docs/full-implementation.md).
 
 | Component | Source | Commit / version | License |
 |---|---|---|---|
