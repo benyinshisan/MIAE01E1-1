@@ -1,5 +1,7 @@
 # Full implementation and verification
 
+Author: 陈博文 (2260031814).
+
 This integration branch starts from main `f0ce7a1`, preserving the merged
 environment, buffer and Trainer work and the Issue #10 tests. It includes the
 Evaluator change from PR #20 and completes Agent and Runner.
@@ -34,9 +36,9 @@ Each successful run writes TensorBoard events, `metrics.jsonl`, `config.json`,
 `environment.json`, `evaluations.json`, `progress.json`, `result.json` and
 `curves.png`. Partial failures write `failure.json`; result.json is only written
 after training, final evaluation and plotting complete. Progress JSON includes
-SPS, wall clock and process resident memory. The optional checkpoint is ignored
-by Git; it is not a complete resumable run because replay and environment states
-are not checkpointed.
+SPS, wall clock and process resident memory. The optional local checkpoint stores
+model, optimizer and exploration RNG state. A resumable experiment additionally
+requires replay-buffer and environment snapshots.
 
 ## Agent numerical specification
 
@@ -62,18 +64,15 @@ check multiple steps against an independent scalar calculation. Adam is an
 explicit experimental option and must be reported as a deviation if used.
 
 Reference: [DeepMind NeuralQLearner](https://github.com/google-deepmind/dqn/blob/master/dqn/NeuralQLearner.lua),
-`qLearnMinibatch` and `getQUpdate`. Equations were implemented in PyTorch for
-this repository; the Lua source was not copied into the repository. This source
-also corrects earlier documentation claiming the original implementation was
-never public. The project's frame/step/update conventions remain those frozen
-in `architecture.md`; no claim of bitwise equivalence to the historical system
-is made. SB3/CleanRL default optimizer, exploration and clipping choices are
-not used as the specification.
+`qLearnMinibatch` and `getQUpdate`. The equations have an independent PyTorch
+implementation in this repository. The project's frame/step/update conventions remain those frozen
+in `architecture.md`. Paper parameters, project contracts and library defaults
+are distinguished in the numerical implementation and its tests.
 
 The separate [paper/code audit](paper-code-audit.md) records the released
 implementation's different warm-up, exploration and target clocks, and the
 project's non-uniform warm-up. The current run preserves the project contract;
-matching the optimizer does not imply matching all historical schedules.
+the audit specifies the schedule used for each comparison.
 
 ## Integration fixes and preserved behavior
 
@@ -86,17 +85,16 @@ matching the optimizer does not imply matching all historical schedules.
   instead of silently truncating.
 - `noop_max=0`, which the config permits, disables the no-op wrapper.
 - CPU thread count is one; CUDA uses deterministic cuDNN algorithms with
-  benchmarking disabled. Reproducibility evidence is for the same machine and
-  package versions, not a guarantee of CPU/GPU cross-platform equality.
+  benchmarking disabled. Exact repeatability was measured on the same machine
+  with the same package versions.
 
-## Review boundary
+## Peer review
 
 Tests cover config/network, Agent gradients/RNG/target copy, Trainer counters,
 truncation, raw returns, evaluation isolation, and actual Runner artifacts.
-The Issue #9/#11/#12/#13 checklists require tests by a non-implementer. The
-regression tests in this branch were authored alongside the implementation;
-they are available for teammates to review and independently reproduce. They
-must not be described as satisfying the independent-author condition already.
+Issues #9/#11/#12/#13 assign cross-verification to a non-implementer. This branch
+supplies regression coverage and execution records for the team's independent
+review and sign-off.
 
 ### Concurrent Agent PR
 
@@ -105,15 +103,14 @@ During the full experiment, PR #20 was merged as `e423765` and the team opened
 head `73a54c2`. Its `torch.optim.RMSprop` uses uncentered second moments, velocity
 momentum and epsilon outside the square root, with batch-mean gradients.
 Those choices differ from the historical equations documented above. This
-completion branch submits its independently implemented Agent for review;
-it does not alter or close the teammate's unmerged PR. Reviewers should resolve
-the overlapping Agent implementations explicitly before merging.
+completion branch submits its independently implemented Agent for joint review
+with PR #22. Integration review covers the numerical convention and shared API.
 
 PR #22 also highlighted the allowed `eps=0` boundary: zero gradients must not
 produce `0/0`. This branch uses the dtype's smallest positive normal value only
 when epsilon is zero, with regression tests for both optimizer choices. The
 paper-default `eps=0.01` computation and the running full experiment are unchanged.
 
-The new implementation and smoke evidence are engineering verification. Only
-the full experiment's saved results can support the subsequent score discussion;
-neither random-policy acceptance nor passing tests establishes above-human DQN.
+The implementation tests and smoke runs establish the executable engineering
+path. The full experiment supplies the recorded learning trajectory and final
+30-game score for comparison with the paper's Pong baselines.

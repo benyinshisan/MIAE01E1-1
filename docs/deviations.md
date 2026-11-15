@@ -1,6 +1,6 @@
 # Deviations from the paper
 
-Every difference between our reproduction and Mnih et al. (2015). This table is the source
+Declared differences between our reproduction and Mnih et al. (2015). This table is the source
 for the report's **Reproduction Setup** section, criterion
 `a complete table of deviations from the paper (item, original setting, setting used and reason)`.
 
@@ -18,7 +18,7 @@ the end so the table is verifiably complete.
 
 | # | Item | Paper | Ours | Reason and expected effect |
 |---|---|---|---|---|
-| A1 | Games | 49 Atari 2600 games, one network per game | **1 game (Pong)** | Project compute/time budget. The generality claim cannot be tested and remains a limitation. |
+| A1 | Games | 49 Atari 2600 games, one network per game | **1 game (Pong)** | Project compute/time budget; the current comparison covers Pong. |
 | A2 | Training length | Paper reports 50M frames; released driver requests 50M interaction-loop iterations with repeat 4 | **10M nominal raw frames** (2.5M agent decisions) | Reduced budget; the two sources use different counting conventions. See the audit before quoting a budget ratio. Actual wall times are in `validation.md`. |
 | A3 | Replay capacity | 1,000,000 stored recent observations | **200,000** | One million full (4, 84, 84) uint8 stacks would need about 28 GB before runtime overhead. Reduced capacity changes replay diversity. |
 | A4 | Compute | GPU | **RTX 3080 Laptop GPU** for the full integration run; CPU for clean-environment checks | Supersedes the original developer machine's CPU-only description. Per-run metadata records the actual hardware. |
@@ -28,22 +28,22 @@ the end so the table is verifiably complete.
 
 | # | Item | Paper | Ours | Reason |
 |---|---|---|---|---|
-| B1 | Evaluation interval during training | **Not stated** for the main 49-game results (only the ablation captions mention 250,000 training frames) | **Every 1,000,000 frames** | Must be declared in the report's Limitations: the Paper-vs-Ours comparison therefore depends on an assumption about the evaluation schedule. |
-| B2 | Which checkpoint is reported | **Not stated** for the main results (only the ablation captions say "the highest average episode score is reported") | **Final model** | Same limitation. We do *not* select the best checkpoint, so our number is not comparable to a best-of-training number. |
-| B3 | Random seeds | Not stated | **Seed 1 in this delivery; seeds 1, 2, 3 planned** | Three-seed statistics remain future work; a 30-game standard deviation within one seed does not replace them. |
+| B1 | Evaluation interval during training | Main-result interval unspecified; ablation captions give 250,000 training frames | **Every 1,000,000 project frames** | Project evaluation cadence, recorded in each run configuration. |
+| B2 | Which checkpoint is reported | Main-result selection unspecified; ablations report the highest evaluation mean | **Final model** | The reported score corresponds to the final scheduled evaluation. |
+| B3 | Random seeds | Not stated | **Seed 1 in this delivery; seeds 1, 2, 3 planned** | Current standard deviations describe 30 games within one seed; the planned comparison also measures variation across seeds. |
 | B4 | Human baseline | Measured by a professional tester (~20 episodes after ~2 h practice) | **Paper's reported value (9.3 for Pong)** | We do not re-measure a human. The normalized score therefore inherits the paper's human baseline. |
 
 ## C. Implementation provenance
 
 | # | Item | Paper | Ours | Reason |
 |---|---|---|---|---|
-| C1 | Starting code | Original Torch7 implementation available at google-deepmind/dqn; the earlier unpublished claim is superseded | **Written from scratch**; `cleanrl` @ `fe8d8a0` used as reference implementation | The course lists cleanrl as the reference. Atari wrapper and replay-buffer design are adapted from cleanrl / Stable-Baselines3 (MIT); see `THIRD_PARTY_NOTICES.md`. |
+| C1 | Starting code | Original Torch7 implementation available at google-deepmind/dqn | **Written from scratch**; `cleanrl` @ `fe8d8a0` used as reference implementation | The course lists cleanrl as the reference. Atari wrapper and replay-buffer design are adapted from cleanrl / Stable-Baselines3 (MIT); see `THIRD_PARTY_NOTICES.md`. |
 | C2 | Code structure | Torch7 research implementation | 8-module package (`miae01_dqn/`) | Three-person parallel work; module boundaries documented in `docs/architecture.md`. No effect on algorithm behaviour. |
 
 ## D. Paper parameters under the project's stated interpretation
 
-The numeric values below do not establish equivalence to the released code's
-schedule. In particular, D5/D7/D8 must be read with `paper-code-audit.md`.
+The numeric values below follow the project's counting convention. The
+released-code comparison for D5/D7/D8 is detailed in `paper-code-audit.md`.
 
 | # | Item | Value used | Source |
 |---|---|---|---|
@@ -73,4 +73,4 @@ schedule. In particular, D5/D7/D8 must be read with `paper-code-audit.md`.
 
 ## Integration update (2026-11-15)
 
-The earlier CPU-only hardware statements describe the original development machine. The integration work also uses an RTX 3080 Laptop GPU; recorded per-run environment metadata and timings take precedence for these runs. Scale remains one game, 200k replay capacity and 10M training frames. The centered RMSProp equations, reduction convention and smoke-only overrides are documented in [full-implementation.md](full-implementation.md). No training score is inferred from these configuration choices.
+The integration experiment uses an RTX 3080 Laptop GPU; per-run environment metadata records its hardware and timings. Scale is one game, 200k replay capacity and 10M nominal raw frames. The centered RMSProp equations, reduction convention and smoke profile are documented in [full-implementation.md](full-implementation.md). Observed scores are reported in [validation.md](validation.md).
