@@ -71,3 +71,19 @@ def test_real_runner_artifacts_and_overwrite_protection(tmp_path):
     saved=json.loads((directory/'config.json').read_text())
     assert saved['run']['seed']==3 and saved['algo']['replay_capacity']==32
     with pytest.raises(FileExistsError):run_experiment(cfg)
+
+
+def test_atomic_json_retries_windows_reader_lock(tmp_path, monkeypatch):
+    import json
+    from miae01_dqn.runner import write_json
+    real_replace=Path.replace
+    attempts=[]
+    def locked_once(path,target):
+        attempts.append(1)
+        if len(attempts)==1:
+            raise PermissionError('simulated Windows reader lock')
+        return real_replace(path,target)
+    monkeypatch.setattr(Path,'replace',locked_once)
+    target=tmp_path/'progress.json'
+    write_json(target,{'step':500000})
+    assert len(attempts)==2 and json.loads(target.read_text())=={'step':500000}

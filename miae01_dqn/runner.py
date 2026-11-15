@@ -20,7 +20,16 @@ from miae01_dqn.config import RunConfig
 def write_json(path: Path, data: Any) -> None:
     temp = path.with_suffix(path.suffix + '.tmp')
     temp.write_text(json.dumps(data, indent=2, default=str, allow_nan=False), encoding='utf-8')
-    temp.replace(path)
+    # Windows readers/antivirus can briefly deny replacement of an open file.
+    # Keep the old complete JSON visible and retry instead of aborting training.
+    for attempt in range(100):
+        try:
+            temp.replace(path)
+            return
+        except PermissionError:
+            if attempt == 99:
+                raise
+            time.sleep(0.05)
 
 
 class Logger:
