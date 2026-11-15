@@ -1,0 +1,9 @@
+{
+  "torch": "2.4.1+cpu",
+  "numpy": "2.5.4",
+  "gymnasium": "1.0.0",
+  "ale": "0.10.1",
+  "device": "cpu",
+  "device_name": "cpu",
+  "available_memory_bytes": 16579895296
+}

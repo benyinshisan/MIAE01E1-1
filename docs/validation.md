@@ -68,5 +68,38 @@ replacement, with a regression test that simulates the lock (6 Runner tests
 passed). The full seed was restarted from initialization as
 `seed1_cap200k_complete`, using unchanged training hyperparameters.
 
-Full-run result and measured wall time will be recorded after the restarted run
-finishes. No success or score conclusion is inferred from partial progress.
+The restarted run completed on **2026-11-16** on the local RTX 3080 Laptop GPU.
+The recorded implementation is `d3b95ba`; the later zero-epsilon protection leaves
+this run's default epsilon 0.01 calculation unchanged.
+
+| Full-run evidence | Verified value |
+|---|---:|
+| Agent steps / nominal raw frames | 2,500,000 / 10,000,000 |
+| Gradient updates | 621,875 |
+| Completed training episodes | 1874 |
+| Evaluation rounds / games per round | 10 / 30 |
+| Final raw return mean | 8.466667 |
+| Final population standard deviation | 7.894020 |
+| Human-normalized score | 97.222% |
+| Training-loop wall time, including evaluation | 11688.96 seconds (3.247 hours) |
+| Recorded experiment clock | 11690.27 seconds |
+| Last logged training SPS | 238.82 |
+| Peak sampled process RSS | 6.277 GiB |
+| JSON metric records checked | 11882 |
+
+Artifact verification checked the full step sequence, episode/update counters,
+all ten evaluation frame labels, each 30-game score vector, recomputed mean,
+population standard deviation and normalization, finite scalar logs, and the
+TensorBoard event stream. The saved policy and target parameters are finite;
+the local checkpoint's SHA256 is recorded in `verification.json`.
+
+See [the signed implementation report](implementation-report.md) for the ten-round
+table and plots. Evidence is stored in
+[`runs/seed1_cap200k_complete`](../runs/seed1_cap200k_complete/), including
+`result.json`, `evaluations.json`, `metrics.jsonl`, events, configuration,
+environment metadata, `curves.png`, `evaluation_curve.png` and `verification.json`.
+The checkpoint is retained locally; logs and figures are versioned.
+
+The run uses the frozen project counting convention. The paper and released-code
+comparison, including the warm-up schedule, is documented in
+[paper-code-audit.md](paper-code-audit.md).

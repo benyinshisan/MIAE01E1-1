@@ -17,7 +17,7 @@ We test the paper's central claim on a **reduced scale**: one game, 2.5M agent d
 | Package skeleton (`miae01_dqn/`, `pyproject.toml`) | ✅ done — importable, `pytest` green |
 | Architecture & invariants (`docs/architecture.md`) | ✅ done |
 | Module implementation (`miae01_dqn/`) | Implemented; submitted for team review |
-| Smoke run / main experiment | Two 5k smoke runs verified; full-run evidence tracked in docs/validation.md |
+| Smoke run / main experiment | Two GPU 5k runs and a clean-environment CPU 5k run verified; seed 1 completed 2.5M decisions. See [signed report](docs/implementation-report.md) and [evidence](docs/validation.md). |
 
 ---
 

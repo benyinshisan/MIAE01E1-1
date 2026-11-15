@@ -32,6 +32,21 @@ clean-environment validation and the complete first-seed local GPU experiment.
   the project's non-uniform warm-up in `paper-code-audit.md`; preserved the
   frozen experiment rather than changing its schedule mid-run.
 
-The full-run numerical results and review link are recorded after completion in
-`validation.md` and the final PR. Changes are submitted through the integration
-branch for team review.
+## 2026-11-16 — full experiment and review package
+
+- Completed seed 1 at 2,500,000 decisions, 10M nominal raw frames and 621,875
+  gradient updates; ten scheduled 30-game evaluations are recorded.
+- Final return mean 8.466667, population SD 7.894020, normalized
+  score 97.222%; measured training loop 11688.96 seconds.
+- Verified JSON and TensorBoard records, counters, score statistics, saved
+  parameters and checkpoint SHA256; rendered training and evaluation figures.
+- Prepared the signed Traditional Chinese implementation report for
+  陈博文 (2260031814), with module contributions, test evidence, full results
+  and the source comparison. Engineering documents use concrete configurations
+  and measured outcomes.
+- Submitted code, tests and run evidence through `feat/complete-dqn` for team
+  review. Cross-verification and the parallel Agent implementation are included
+  in the review agenda.
+
+Detailed numerical evidence is in `validation.md`; the public summary and figures
+are in `implementation-report.md`.
