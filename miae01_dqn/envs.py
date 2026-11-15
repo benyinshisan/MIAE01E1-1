@@ -168,9 +168,13 @@ class FireReset(gym.Wrapper):
 class ClipReward(gym.RewardWrapper):
     """Clip the reward to its sign, i.e. {-1, 0, +1}.
 
-    Only the training signal is clipped; the trainer logs the unclipped score
-    by reading it from ``info`` before this wrapper sees it.
+    The trainer reads the unclipped reward from ``info["raw_reward"]``.
     """
+
+    def step(self, action: int) -> tuple[np.ndarray, float, bool, bool, dict]:
+        obs, reward, terminated, truncated, info = self.env.step(action)
+        info = {**info, "raw_reward": float(reward)}
+        return obs, self.reward(reward), terminated, truncated, info
 
     def reward(self, reward: float) -> float:
         return float(np.sign(reward))

@@ -54,10 +54,9 @@ class Trainer:
     """Runs the training loop and returns a :class:`TrainResult`.
 
     ``log_every_steps`` (agent steps) controls the periodic scalars. The optional
-    ``on_eval`` hook fires every ``cfg.eval.every_frames`` frames (converted to
-    agent steps), so the caller can evaluate mid-training without the trainer
-    knowing what an evaluator is; it must not touch the env, agent state or
-    buffer.
+    ``on_eval`` hook fires after the first agent step that reaches each
+    ``cfg.eval.every_frames`` threshold, at most once per step. The callback
+    must leave the training environment, agent state and buffer untouched.
     """
 
     def __init__(
@@ -85,7 +84,9 @@ class Trainer:
         """Run ``cfg.algo.total_agent_steps`` steps and report the run summary."""
         cfg, algo = self._cfg, self._cfg.algo
         agent, buffer, logger = self._agent, self._buffer, self._logger
-        eval_every = max(1, cfg.eval.every_frames // algo.action_repeat)
+        on_eval = self._on_eval
+        eval_every_frames = cfg.eval.every_frames
+        next_eval_frame = eval_every_frames
 
         env = self._env_factory.make_train(cfg.run.seed)
         returns: deque[float] = deque(maxlen=100)
@@ -104,15 +105,18 @@ class Trainer:
                 action = agent.act(observation, epsilon)
                 next_obs, reward, terminated, truncated, info = env.step(action)
 
-                # Truncation cuts the episode but not the return: the target must
-                # still bootstrap, while the stored successor must be the true
-                # last frame of the episode, not the first frame after reset.
+                episode_ended = terminated or truncated
+                final_obs = info.get("final_observation") if episode_ended else None
                 done = bool(terminated)
-                stored_next = (
-                    info.get("final_observation", next_obs) if truncated else next_obs
+                buffer.push(
+                    observation,
+                    action,
+                    float(reward),
+                    next_obs if final_obs is None else final_obs,
+                    done,
+                    truncated=truncated,
                 )
-                buffer.push(observation, action, float(reward), stored_next, done)
-                episode_return += float(reward)
+                episode_return += float(info.get("raw_reward", reward))
                 steps = step + 1
 
                 if (
@@ -126,14 +130,15 @@ class Trainer:
                         if updates % algo.target_update_every_updates == 0:
                             agent.sync_target()
 
-                if terminated or truncated:
+                observation = next_obs
+                if episode_ended:
                     episodes += 1
                     returns.append(episode_return)
                     logger.scalar("episodic_return", episode_return, steps)
-                    observation, _ = env.reset()
+                    # Same-step autoreset already returned a new observation.
+                    if final_obs is None:
+                        observation, _ = env.reset()
                     episode_return = 0.0
-                else:
-                    observation = next_obs
 
                 if steps % self._log_every_steps == 0:
                     now = time.perf_counter()
@@ -149,8 +154,11 @@ class Trainer:
                         logger.scalar("td_loss", last_loss, steps)
                     last_step, last_time = steps, now
 
-                if self._on_eval is not None and steps % eval_every == 0:
-                    self._on_eval(steps)
+                if on_eval is not None:
+                    frames = steps * algo.action_repeat
+                    if frames >= next_eval_frame:
+                        on_eval(steps)
+                        next_eval_frame = (frames // eval_every_frames + 1) * eval_every_frames
         finally:
             env.close()
 
