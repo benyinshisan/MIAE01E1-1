@@ -323,7 +323,7 @@ class EnvFactory:
         meanings = env.unwrapped.get_action_meanings()
         if len(meanings) >= 3 and meanings[1] == "FIRE":
             env = FireReset(env)
-        if spec.clip_reward:
+        if episodic_life and spec.clip_reward:
             env = ClipReward(env)
         env = ResizeObservation(env, spec.frame_size)
         env = Grayscale(env)
