@@ -2,13 +2,13 @@
 
 Replication of **Mnih et al., "Human-level control through deep reinforcement learning", *Nature* 518:529–533 (2015)**, for the course *MIAE01 — Programming and Tools for Machine Learning* (MUST, AY 2026–2027).
 
-We reproduce the paper's central claim on a **reduced scale** (one game, 10M frames instead of 49 games, 50M frames) and report a Paper-vs-Ours comparison together with the deviations that explain the gap.
+We test the paper's central claim on a **reduced scale**: one game, 2.5M agent decisions (10M nominal raw frames). Results are reported with the deviations and counting conventions that limit the comparison; see the [paper/code audit](docs/paper-code-audit.md).
 
 ---
 
 ## Status
 
-> **This repository is in the implementation phase.** The package skeleton and the environment are complete; the modules themselves are being written.
+> **All eight modules are implemented on the integration branch.** See [implementation and verification](docs/full-implementation.md) for commands, numerical details and review status.
 
 | Part | State |
 |---|---|
@@ -16,8 +16,8 @@ We reproduce the paper's central claim on a **reduced scale** (one game, 10M fra
 | Environment — Colab (`requirements.txt`) | ⚠️ prepared, **not verified** |
 | Package skeleton (`miae01_dqn/`, `pyproject.toml`) | ✅ done — importable, `pytest` green |
 | Architecture & invariants (`docs/architecture.md`) | ✅ done |
-| Module implementation (`miae01_dqn/`) | 🚧 in progress — see Issues |
-| Smoke run / main experiment | ⏳ after implementation |
+| Module implementation (`miae01_dqn/`) | Implemented; submitted for team review |
+| Smoke run / main experiment | Two GPU 5k runs and a clean-environment CPU 5k run verified; seed 1 completed 2.5M decisions. See [signed report](docs/implementation-report.md) and [evidence](docs/validation.md). |
 
 ---
 
@@ -59,7 +59,7 @@ conda activate miae01-dqn
 the hardware. Install it once, with the build that matches your machine:
 
 ```bash
-# CPU-only machine (~200 MB) — this is what we develop on
+# CPU-only machine (~200 MB)
 pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
 
 # CUDA machine (~2.4 GB)
@@ -74,7 +74,8 @@ This step makes `import miae01_dqn` and `python -m miae01_dqn.runner` work from 
 
 ```bash
 python -m pip install -e .
-python -m pytest -q          # expected: 3 passed
+python -m pip install -r requirements-test.txt
+python -m pytest -q
 ```
 
 ### Editing the code after installation
@@ -109,7 +110,7 @@ python -c "import miae01_dqn; print(miae01_dqn.__file__)"
 
 ## 3. Expected outputs and runtimes
 
-When the implementation lands, each run will write to `runs/<env_id>__<seed>__<tag>__<timestamp>/`:
+Each run writes to `runs/<env_id>__seed<seed>__cap<capacity>__<timestamp>/` by default:
 
 | Artifact | Content |
 |---|---|
@@ -176,10 +177,7 @@ runner → trainer → agent → network
 
 ## 6. Starting code, credits and license
 
-The paper's original implementation was never publicly released: the "Code availability" note
-(Methods, p. 6) points to `sites.google.com/a/deepmind.com/dqn`, which now redirects to a
-DeepMind Google Workspace sign-in and is not publicly accessible. The course therefore lists a
-reference implementation.
+The original Torch7 implementation is publicly available at [google-deepmind/dqn](https://github.com/google-deepmind/dqn). This corrects the earlier claim based on the old Code availability redirect. We use the paper and its update equations as references; implementation and numerical choices are documented in [full-implementation.md](docs/full-implementation.md).
 
 | Component | Source | Commit / version | License |
 |---|---|---|---|

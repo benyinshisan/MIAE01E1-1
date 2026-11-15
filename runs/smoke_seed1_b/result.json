@@ -1,0 +1,40 @@
+{
+  "status": "complete",
+  "train": {
+    "agent_steps": 5000,
+    "frames": 20000,
+    "updates": 1187,
+    "episodes": 5,
+    "wall_clock_s": 16.552162799984217,
+    "final_return_mean": -20.2
+  },
+  "evaluation": {
+    "at_frame": 20000,
+    "scores": [
+      -21.0,
+      -21.0
+    ],
+    "mean": -21.0,
+    "std": 0.0,
+    "random_score": -20.7,
+    "human_score": 9.3,
+    "normalized": -1.0000000000000024
+  },
+  "wall_clock_s": 20.96048740000697,
+  "rss_bytes": 1234067456,
+  "run_dir": "runs\\smoke_seed1_b",
+  "evaluations": [
+    {
+      "at_frame": 20000,
+      "scores": [
+        -21.0,
+        -21.0
+      ],
+      "mean": -21.0,
+      "std": 0.0,
+      "random_score": -20.7,
+      "human_score": 9.3,
+      "normalized": -1.0000000000000024
+    }
+  ]
+}

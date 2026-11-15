@@ -1,7 +1,7 @@
 # DQN 复现工程：架构与接口契约
 
-- 状态：草案（模块划分、接口契约、环境版本已定；配置命名、评测口径、包结构待定）
-- 接口代码：[`miae01_dqn/`](../miae01_dqn/)（八个模块，函数体为 `NotImplementedError`）
+- 状态：八模块已实现，整合分支待组员审核；验证与实验进度见 [`validation.md`](validation.md)。
+- 接口代码：[`miae01_dqn/`](../miae01_dqn/)（八个模块；下述接口与计数契约保持一致）
 - 包配置：[`pyproject.toml`](../pyproject.toml)（可 `pip install -e .` 安装）
 - 论文规格来源：Mnih et al., *Human-level control through deep reinforcement learning*, Nature 518:529–533, 2015
 - 决策记录：ADR-0007（主线改为 DQN 并完全自写）
@@ -38,6 +38,10 @@ runner ──→ trainer ──→ agent ──→ network
 6. 日志只写在 `trainer / evaluator / runner`；agent 与 buffer 不知道 writer 存在。
 
 ## 3. 三套计数单位
+
+本节是项目冻结的计数契约。论文表述、公开 Torch7 代码与本契约存在口径差别，
+尤其是预热、探索和 target 时钟；详见 [`paper-code-audit.md`](paper-code-audit.md)。
+本次实验沿用本节，不能据此声称与公开原版代码的时间表完全相同。
 
 论文里 frame / step / update 是三套不同的计数，混用会静默出错：
 
@@ -165,7 +169,7 @@ for step in range(total_agent_steps):
 - Colab 免费层：内存 12.7 GB，200k 容量 buffer 占 5.6 GB；device 不可写死；
   GPU 上数字与 CPU 不完全可比，需在报告中说明。
 
-## 7. 默认值即论文规格
+## 7. 论文数值与项目计数约定
 
 | 字段 | 值 | 出处 |
 |---|---|---|

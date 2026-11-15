@@ -14,6 +14,7 @@ Validation is deliberately small:
 from __future__ import annotations
 
 import typing
+import types
 from dataclasses import dataclass, field, fields, replace
 from pathlib import Path
 from typing import Any
@@ -35,7 +36,7 @@ def _check_types(obj: Any) -> None:
 
 def _matches(value: Any, expected: Any) -> bool:
     origin = typing.get_origin(expected)
-    if origin is typing.Union:                     # e.g. float | None
+    if origin in (typing.Union, types.UnionType):
         return any(_matches(value, arg) for arg in typing.get_args(expected))
     if expected is int:
         return isinstance(value, int) and not isinstance(value, bool)
@@ -46,7 +47,7 @@ def _matches(value: Any, expected: Any) -> bool:
 
 def _name(expected: Any) -> str:
     origin = typing.get_origin(expected)
-    if origin is typing.Union:
+    if origin in (typing.Union, types.UnionType):
         return " or ".join(_name(a) for a in typing.get_args(expected))
     return getattr(expected, "__name__", str(expected))
 
@@ -250,8 +251,8 @@ _SPEC_FIELDS: dict[str, frozenset[str]] = {
 def _cast(raw: Any, expected: Any) -> Any:
     """Coerce an override value (often a CLI string) to the annotated type."""
     origin = typing.get_origin(expected)
-    if origin is typing.Union:                     # e.g. float | None
-        if raw is None:
+    if origin in (typing.Union, types.UnionType):
+        if raw is None or (isinstance(raw, str) and raw.lower() in ('none', 'null')):
             return None
         inner = [a for a in typing.get_args(expected) if a is not type(None)]
         return _cast(raw, inner[0]) if len(inner) == 1 else raw
@@ -266,6 +267,8 @@ def _cast(raw: Any, expected: Any) -> Any:
                 return False
         raise ValueError(f"cannot interpret {raw!r} as bool")
     if expected is int:
+        if isinstance(raw, bool) or (isinstance(raw, float) and not raw.is_integer()):
+            raise ValueError('expected an integer without truncation')
         return int(raw)
     if expected is float:
         return float(raw)

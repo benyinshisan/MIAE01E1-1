@@ -1,0 +1,4 @@
+{
+  "type": "PermissionError",
+  "message": "[WinError 5] \u62d2\u7edd\u8bbf\u95ee\u3002: 'runs\\\\seed1_cap200k_full\\\\progress.json.tmp' -> 'runs\\\\seed1_cap200k_full\\\\progress.json'"
+}
