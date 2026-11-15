@@ -2,16 +2,19 @@
 
 Implementation: issue I-04.
 
-Layout: one preallocated uint8 ring of observations. ``next_obs`` is never
-stored; it is read one slot ahead, so a transition occupies exactly one slot::
+Layout: one preallocated uint8 ring of observations. Normally ``next_obs``
+is read one slot ahead, so a transition occupies one slot::
 
     obs[i]             -> the frame observed at step i
     obs[(i + 1) % C]   -> its successor, i.e. the ``next_obs`` of that step
     actions[i], rewards[i], dones[i] -> the rest of the transition
 
+A time-limit truncation also saves its final observation separately because
+the next push overwrites the shared slot with the reset observation.
+
 Invariants
 ----------
-* one copy of every frame: ``(capacity, 4, 84, 84)`` uint8, ~5.6 GB at 200k
+* one preallocated observation array: ``(capacity, 4, 84, 84)`` uint8, ~5.6 GB at 200k
   and ~28 GB at the paper's 1M. Storing float32 instead would be four times
   larger, which is why the division by 255 lives in the network, not here;
 * the slot under the write pointer is never sampled: its successor is the slot
@@ -37,10 +40,9 @@ class TransitionBatch(NamedTuple):
 class ReplayBuffer:
     """Single-array ring buffer of uint8 frames, sampled uniformly.
 
-    A transition is stored where its *observation* lands; ``next_obs`` is read
-    from the next slot, so the buffer holds one copy of every frame instead of
-    two. ``push`` only accepts true terminations - time-limit truncation must be
-    filtered by the caller (see ``docs/architecture.md`` section 4).
+    A transition is stored where its observation lands. The buffer reads
+    ``next_obs`` from the next slot except for nonterminal truncations, which
+    keep their final observation until the transition is evicted.
     """
 
     def __init__(
@@ -65,6 +67,7 @@ class ReplayBuffer:
         self._actions = np.zeros(capacity, dtype=np.int64)
         self._rewards = np.zeros(capacity, dtype=np.float32)
         self._dones = np.zeros(capacity, dtype=bool)
+        self._truncated_next_obs: dict[int, np.ndarray] = {}
         self._pos = 0  # slot holding the newest observation
         self._full = False
         self._rng = np.random.default_rng(seed)
@@ -97,19 +100,26 @@ class ReplayBuffer:
         reward: float,
         next_obs: np.ndarray,
         done: bool,
+        *,
+        truncated: bool = False,
     ) -> None:
-        """Append one transition, overwriting the oldest slot once full."""
+        """Append a transition. Set ``done`` only for a terminal transition."""
         pos = self._pos
-        # Writing ``obs`` is idempotent from the second push on (it equals the
-        # previous ``next_obs``) and bootstraps slot 0, which would otherwise
-        # stay all-zero and be sampled as a fake frame while the ring fills up.
-        self._obs[pos] = self._as_frame(obs, "obs")
-        self._obs[(pos + 1) % self._capacity] = self._as_frame(next_obs, "next_obs")
+        next_pos = (pos + 1) % self._capacity
+        current_frame = self._as_frame(obs, "obs")
+        next_frame = self._as_frame(next_obs, "next_obs")
+        self._obs[pos] = current_frame
+        self._obs[next_pos] = next_frame
         self._actions[pos] = action
         self._rewards[pos] = reward
         self._dones[pos] = done
 
-        self._pos = (pos + 1) % self._capacity
+        # The next write slot's old transition is no longer sampleable.
+        self._truncated_next_obs.pop(next_pos, None)
+        if truncated and not done:
+            self._truncated_next_obs[pos] = next_frame.copy()
+
+        self._pos = next_pos
         if self._pos == 0:
             self._full = True
 
@@ -137,14 +147,18 @@ class ReplayBuffer:
             ) % self._capacity
         else:
             idx = self._rng.integers(0, self._pos, size=batch_size)
-        nxt = (idx + 1) % self._capacity
-
         # Fancy indexing copies, so later pushes cannot mutate a handed-out batch.
+        next_obs = self._obs[(idx + 1) % self._capacity]
+        if self._truncated_next_obs:
+            for batch_index, slot in enumerate(idx):
+                final_obs = self._truncated_next_obs.get(int(slot))
+                if final_obs is not None:
+                    next_obs[batch_index] = final_obs
         return TransitionBatch(
             obs=self._obs[idx],
             actions=self._actions[idx],
             rewards=self._rewards[idx],
-            next_obs=self._obs[nxt],
+            next_obs=next_obs,
             dones=self._dones[idx],
         )
 

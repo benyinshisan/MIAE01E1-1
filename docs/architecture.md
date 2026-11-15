@@ -78,10 +78,10 @@ runner ──→ trainer ──→ agent ──→ network
 ### buffer
 
 - 容量固定，写满覆盖最旧；dtype 固定 `uint8`。
-- **只分配一份观测数组**：`next_obs` 不另存，取 `obs_buf[(i + 1) % capacity]`。
-  因此写指针那一格不可被采样（它的下一格还没写入）。
+- **只预分配一份观测数组**。通常从 `obs_buf[(i + 1) % capacity]` 读取 `next_obs`。
+  写指针所在的槽位不可被采样。非终止的截断转移单独保存末帧，随转移淘汰。
 - `sample()` 在 `len(self) < batch_size` 时抛 `ValueError`，不得静默缩小 batch。
-- `push(done=...)` 只接收**真终止**；时间上限截断不传进来。
+- `done` 只标记终止。时间上限截断通过 `push(truncated=...)` 单独标记。
 
 ### network
 
@@ -112,8 +112,9 @@ for step in range(total_agent_steps):
     action = agent.act(obs, eps)
     next_obs, r, term, trunc, info = env.step(action)
     done   = term                        # 不含 trunc
-    real_next = info["final_observation"] if trunc else next_obs
-    buffer.push(obs, action, r, real_next, done)
+    real_next = info.get("final_observation", next_obs)
+    buffer.push(obs, action, r, real_next, done, truncated=trunc)
+    episode_return += info.get("raw_reward", r)
     obs = next_obs
     if step % learn_every_steps == 0 and step >= replay_start_steps:
         if agent.update() is not None:
@@ -127,7 +128,7 @@ for step in range(total_agent_steps):
 不变量：
 
 - 环境步数与 buffer 写入数一一对应，预热期不得丢样本。
-- `real_next_obs` 在 trunc 时必须用 `final_observation` 覆盖，否则引导项跨回合泄漏。
+- 截断时优先存储 `info["final_observation"]`。普通单环境直接返回末帧。
 - 日志里存**原始得分**（未裁剪、未归一化），归一化在报告层做。
 
 ### evaluator
