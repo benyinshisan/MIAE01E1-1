@@ -1,0 +1,50 @@
+{
+  "env": {
+    "env_id": "ALE/Pong-v5",
+    "frame_size": 84,
+    "frame_stack": 4,
+    "action_repeat": 4,
+    "noop_max": 30,
+    "frameskip": 1,
+    "repeat_action_probability": 0.0,
+    "episodic_life": true,
+    "clip_reward": true,
+    "grayscale": true,
+    "max_and_skip": true
+  },
+  "optim": {
+    "kind": "rmsprop",
+    "lr": 0.00025,
+    "momentum": 0.95,
+    "alpha": 0.95,
+    "eps": 0.01,
+    "td_error_clip": 1.0,
+    "grad_clip_norm": null
+  },
+  "algo": {
+    "gamma": 0.99,
+    "batch_size": 32,
+    "replay_capacity": 200000,
+    "replay_start_frames": 50000,
+    "learn_every_steps": 4,
+    "target_update_every_updates": 10000,
+    "eps_start": 1.0,
+    "eps_end": 0.1,
+    "eps_decay_frames": 1000000,
+    "total_agent_steps": 2500000,
+    "action_repeat": 4
+  },
+  "eval": {
+    "every_frames": 1000000,
+    "episodes": 30,
+    "epsilon": 0.05,
+    "max_episode_frames": 18000
+  },
+  "run": {
+    "seed": 2,
+    "device": "cuda",
+    "run_name": "seed2_cap200k_complete",
+    "log_dir": "runs",
+    "save_checkpoints": true
+  }
+}

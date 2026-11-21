@@ -1,0 +1,9 @@
+{
+  "torch": "2.4.1+cu121",
+  "numpy": "2.5.4",
+  "gymnasium": "1.0.0",
+  "ale": "0.10.1",
+  "device": "cuda",
+  "device_name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "available_memory_bytes": 6794862592
+}

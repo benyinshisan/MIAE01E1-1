@@ -1,0 +1,65 @@
+{
+  "source_commit_at_launch": "7a739837791adaeb8f09ca1dcd677ffa0d506647",
+  "reference_run": "runs/seed1_cap200k_complete",
+  "reference_source_commit_at_launch": "d3b95ba",
+  "configuration_differences_from_reference": ["run.seed", "run.run_name"],
+  "runner": "magpie/bailian-token-plan/deepseek-v4.1-flash-1017",
+  "launch_record_utc": "2026-11-20T19:05:42Z",
+  "command": ".venv/bin/python -m miae01_dqn.runner --seed 2 --device cuda --replay-capacity 200000 --total-agent-steps 2500000 --save-checkpoints --run-name seed2_cap200k_complete",
+  "environment": {
+    "runner_environment_file": "environment.json",
+    "python": "3.12.16",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "opencv-python-headless": "5.0.0.93",
+    "tensorboard": "2.21.0",
+    "PyYAML": "6.0.3",
+    "psutil": "7.2.2",
+    "matplotlib": "3.11.2",
+    "pytest": "9.2.0"
+  },
+  "preflight": {
+    "pytest_passed": 60,
+    "pytest_wall_clock_s": 13.83,
+    "smoke_command": ".venv/bin/python -m miae01_dqn.runner --smoke --seed 2 --device cuda --run-name seed2_smoke_5k",
+    "smoke_agent_steps": 5000,
+    "smoke_updates": 1187,
+    "smoke_wall_clock_s": 6.265150358000028,
+    "local_smoke_result": "runs/seed2_smoke_5k/result.json"
+  },
+  "checks_passed": true,
+  "agent_steps": 2500000,
+  "nominal_frames": 10000000,
+  "updates": 621875,
+  "evaluation_rounds": 10,
+  "games_per_evaluation": 30,
+  "evaluation_epsilon": 0.05,
+  "metrics_file": "metrics.jsonl",
+  "metric_records": 11708,
+  "per_game_scores_file": "evaluations.json",
+  "result_file": "result.json",
+  "final_evaluation": {
+    "at_frame": 10000000,
+    "mean": -13.766666666666667,
+    "population_std": 4.152776848755005,
+    "human_normalized_percent": 23.111111111111104
+  },
+  "wall_clock_s": 3566.216819456,
+  "observed_peak_rss_bytes": 6735888384,
+  "rss_sampling": "TensorBoard rss_bytes every 1000 decision steps, 2500 samples",
+  "checkpoint_sha256": "7444566305ef30e336e4307759fd3328baf23538295ebf71e4810a5776e91e06",
+  "checkpoint_size_bytes": 27006150,
+  "checkpoint_in_git": false,
+  "checkpoint_retrieval": "Copy runs/seed2_cap200k_complete/agent.pt from the original training checkout and verify its SHA-256 against this record.",
+  "checkpoint_load_and_replay": {
+    "device": "cuda",
+    "validation_seed": 20002,
+    "episodes": 1,
+    "raw_score": -7.0
+  },
+  "local_execution_logs": [
+    ".venv/seed2-evidence/pytest.log",
+    ".venv/seed2-evidence/smoke_5k.log",
+    ".venv/seed2-evidence/train.stdout.log",
+    ".venv/seed2-evidence/train.stderr.log"
+  ]
+}
