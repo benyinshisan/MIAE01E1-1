@@ -1,0 +1,14 @@
+[
+  {
+    "at_frame": 20000,
+    "scores": [
+      -21.0,
+      -21.0
+    ],
+    "mean": -21.0,
+    "std": 0.0,
+    "random_score": -20.7,
+    "human_score": 9.3,
+    "normalized": -1.0000000000000024
+  }
+]
