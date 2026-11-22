@@ -48,6 +48,9 @@ Normalization: `100 × (ours − random) / (human − random)`.
 
 ## 2. Quick start
 
+Windows PowerShell users can follow the [step-by-step reproduction recipes](docs/reproduction-recipes.md)
+for installation, a 5k smoke run, evaluation settings, full-run commands and output inspection.
+
 ### Option A — conda (the only verified path)
 
 ```bash

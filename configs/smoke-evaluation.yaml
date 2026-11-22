@@ -1,0 +1,5 @@
+# 2260031814 陈博文 — Issue #29: three-game smoke evaluation.
+# Use with --smoke; the training profile is selected explicitly by the CLI.
+eval:
+  episodes: 3
+  max_episode_frames: 18000

@@ -1,0 +1,128 @@
+{
+  "author": "陈博文",
+  "student_id": "2260031814",
+  "date": "2026-11-22",
+  "base_commit": "8be3fac",
+  "command": "python -m miae01_dqn.runner --smoke --config configs/smoke-evaluation.yaml --seed 1 --device cpu --log-dir ../weekly-checks",
+  "regression": {
+    "command": "python -m pytest -q tests/test_config_network_runner.py",
+    "passed": 6,
+    "seconds": 6.89
+  },
+  "config": {
+    "env": {
+      "env_id": "ALE/Pong-v5",
+      "frame_size": 84,
+      "frame_stack": 4,
+      "action_repeat": 4,
+      "noop_max": 30,
+      "frameskip": 1,
+      "repeat_action_probability": 0.0,
+      "episodic_life": true,
+      "clip_reward": true,
+      "grayscale": true,
+      "max_and_skip": true
+    },
+    "optim": {
+      "kind": "rmsprop",
+      "lr": 0.00025,
+      "momentum": 0.95,
+      "alpha": 0.95,
+      "eps": 0.01,
+      "td_error_clip": 1.0,
+      "grad_clip_norm": null
+    },
+    "algo": {
+      "gamma": 0.99,
+      "batch_size": 32,
+      "replay_capacity": 5000,
+      "replay_start_frames": 1000,
+      "learn_every_steps": 4,
+      "target_update_every_updates": 10000,
+      "eps_start": 1.0,
+      "eps_end": 0.1,
+      "eps_decay_frames": 1000000,
+      "total_agent_steps": 5000,
+      "action_repeat": 4
+    },
+    "eval": {
+      "every_frames": 1000000,
+      "episodes": 3,
+      "epsilon": 0.05,
+      "max_episode_frames": 18000
+    },
+    "run": {
+      "seed": 1,
+      "device": "cpu",
+      "run_name": "ALE-Pong-v5__seed1__cap5000__20261122T035727453215Z",
+      "log_dir": "..\\weekly-checks",
+      "save_checkpoints": false
+    }
+  },
+  "environment": {
+    "torch": "2.4.1+cpu",
+    "numpy": "2.5.4",
+    "gymnasium": "1.0.0",
+    "ale": "0.10.1",
+    "device": "cpu",
+    "device_name": "cpu",
+    "available_memory_bytes": 21889998848
+  },
+  "result": {
+    "status": "complete",
+    "train": {
+      "agent_steps": 5000,
+      "frames": 20000,
+      "updates": 1187,
+      "episodes": 5,
+      "wall_clock_s": 66.0360719000164,
+      "final_return_mean": -20.2
+    },
+    "evaluation": {
+      "at_frame": 20000,
+      "scores": [
+        -21.0,
+        -21.0,
+        -21.0
+      ],
+      "mean": -21.0,
+      "std": 0.0,
+      "random_score": -20.7,
+      "human_score": 9.3,
+      "normalized": -1.0000000000000024
+    },
+    "wall_clock_s": 72.37212020001607,
+    "rss_bytes": 466075648,
+    "run_dir": "..\\weekly-checks\\ALE-Pong-v5__seed1__cap5000__20261122T035727453215Z",
+    "evaluations": [
+      {
+        "at_frame": 20000,
+        "scores": [
+          -21.0,
+          -21.0,
+          -21.0
+        ],
+        "mean": -21.0,
+        "std": 0.0,
+        "random_score": -20.7,
+        "human_score": 9.3,
+        "normalized": -1.0000000000000024
+      }
+    ]
+  },
+  "verified_artifacts": [
+    "config.json",
+    "environment.json",
+    "result.json",
+    "evaluations.json",
+    "metrics.jsonl",
+    "progress.json",
+    "curves.png",
+    "events.out.tfevents.1795319847.R9000K.16492.0"
+  ],
+  "cli_episode_override": {
+    "yaml": 3,
+    "cli": 2,
+    "resolved": 2
+  }
+}
