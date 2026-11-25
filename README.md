@@ -17,7 +17,7 @@ We test the paper's central claim on a **reduced scale**: one game, 2.5M agent d
 | Package skeleton (`miae01_dqn/`, `pyproject.toml`) | ✅ done — importable, `pytest` green |
 | Architecture & invariants (`docs/architecture.md`) | ✅ done |
 | Module implementation (`miae01_dqn/`) | Implemented; submitted for team review |
-| Smoke run / main experiment | Two GPU 5k runs and a clean-environment CPU 5k run verified; seed 1 completed 2.5M decisions. See [signed report](docs/implementation-report.md) and [evidence](docs/validation.md). |
+| Smoke run / main experiment | Two GPU 5k runs and a clean-environment CPU 5k run verified; all three seeds completed 2.5M decisions. See [signed report](docs/implementation-report.md), [evidence](docs/validation.md) and the [three-seed summary](docs/evidence/issue-28/summary.md). |
 
 ---
 
@@ -126,13 +126,27 @@ At that rate a 2.5M-step run would take **≈2.3 h per seed**; three seeds ≈ 7
 
 Memory: the replay buffer stores one `uint8` array of shape `(capacity, 4, 84, 84)`, i.e. **≈5.6 GB at 200k**. The paper's 1M capacity would need ≈28 GB and is not feasible here.
 
+### Aggregate completed runs
+
+After the per-seed runs exist, one command builds the traceable comparison from the raw logs:
+
+```bash
+python -m miae01_dqn.summary --runs-dir runs --output-dir docs/evidence/issue-28 --seeds 1,2,3
+```
+
+It writes `summary.md`, `summary.json`, per-seed and learning-curve CSVs, and
+`learning_curve.png`. Each seed contributes its final 30-game mean; the main
+row uses the mean of seed means and the sample standard deviation (`ddof=1`).
+Missing seeds, unfinished runs, non-30-game evaluations and configuration
+mismatches are listed explicitly instead of being silently dropped.
+
 ---
 
 ## 4. Repository layout
 
 ```text
 .
-├── miae01_dqn/              # the package (8 modules, one per interface unit)
+├── miae01_dqn/              # the package (8 interface modules + summary)
 │   ├── __init__.py          # public exports + __version__
 │   ├── config.py            # EnvSpec / OptimSpec / AlgoSpec / EvalSpec / RunSpec / RunConfig
 │   ├── envs.py              # EnvFactory, EnvHandle
@@ -141,7 +155,8 @@ Memory: the replay buffer stores one `uint8` array of shape `(capacity, 4, 84, 8
 │   ├── agent.py             # Agent (act / update / sync_target)
 │   ├── trainer.py           # Trainer, TrainResult (step-driven loop)
 │   ├── evaluator.py         # Evaluator, EvalResult (30-episode protocol)
-│   └── runner.py            # Logger, build_config, run_experiment, CLI entry
+│   ├── runner.py            # Logger, build_config, run_experiment, CLI entry
+│   └── summary.py           # Issue #28: traceable tables, curves and warnings
 ├── tests/                   # cross-validation tests (written by a non-implementer)
 ├── docs/
 │   ├── architecture.md      # module boundaries, invariants, paper-default table
