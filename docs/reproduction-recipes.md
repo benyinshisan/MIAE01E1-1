@@ -105,6 +105,14 @@ Get-Content -Raw 'runs/<實際目錄名稱>/result.json' | ConvertFrom-Json | Se
 python -m pytest -q tests/test_config_network_runner.py
 ```
 
-## 五、與後續交付銜接
+## 五、跨種子統計與後續交付
 
-本指引完成 #29 的安裝、冒煙、主實驗與輸出檢查部分。失敗用例回放入口由 #25 提供，跨種子統計入口由 #28 提供；其命令隨對應功能整合至本指引。#13 的非實作者復跑紀錄與 PR #32 的交叉驗證相互對照。
+三個種子的完整結果就位後，一條命令即可從原始日誌生成逐種子表、Paper vs Ours 表與學習曲線：
+
+```powershell
+python -m miae01_dqn.summary --runs-dir runs --output-dir docs/evidence/issue-28 --seeds 1,2,3
+```
+
+輸出 `summary.md`、`summary.json`、逐種子與學習曲線 CSV，以及 `learning_curve.png`。每個種子先取最終 30 局均值，主表再對種子均值計算均值與樣本標準差；缺少種子、訓練未跑滿、最終評測不是 30 局或設定不一致都會列出警告。容量消融與失敗搜索的實際產物仍分別依賴 #27、#25/#26。
+
+本指引完成 #29 的安裝、冒煙、主實驗與輸出檢查部分。失敗用例回放入口由 #25 提供；跨種子統計入口 #28 已可用。#13 的非實作者復跑紀錄與 PR #32 的交叉驗證相互對照。

@@ -1,0 +1,77 @@
+{
+  "source_commit_at_launch": "83f057f",
+  "source_note": "83f057f only adds run artifacts; production code is unchanged from a7f8c7c",
+  "reference_run": "runs/seed2_cap200k_complete",
+  "reference_source_commit_at_launch": "7a73983",
+  "configuration_differences_from_reference": [
+    "run.seed",
+    "run.run_name"
+  ],
+  "command": ".venv/bin/python -m miae01_dqn.runner --seed 3 --device cuda --replay-capacity 200000 --total-agent-steps 2500000 --save-checkpoints --run-name seed3_cap200k_complete",
+  "launch_record_utc": "2026-11-25T05:51:35.556495+00:00",
+  "environment": {
+    "runner_environment_file": "environment.json",
+    "python": "3.12.16",
+    "platform": "Linux-7.0.0-44-generic-x86_64-with-glibc2.43",
+    "torch": "2.4.1+cu121",
+    "numpy": "2.5.4",
+    "gymnasium": "1.0.0",
+    "ale": "0.10.1",
+    "device": "cuda",
+    "device_name": "NVIDIA GeForce RTX 4070 Ti SUPER"
+  },
+  "preflight": {
+    "pytest_passed": 95,
+    "pytest_skipped": 1,
+    "pytest_wall_clock_s": 57.08,
+    "smoke_command": ".venv/bin/python -m miae01_dqn.runner --smoke --seed 3 --device cuda --run-name seed3_smoke_5k",
+    "smoke_agent_steps": 5000,
+    "smoke_updates": 1187,
+    "smoke_wall_clock_s": 4.430604160996154,
+    "local_smoke_result": "runs/seed3_smoke_5k/result.json"
+  },
+  "checks_passed": true,
+  "agent_steps": 2500000,
+  "nominal_frames": 10000000,
+  "updates": 621875,
+  "evaluation_rounds": 10,
+  "games_per_evaluation": 30,
+  "evaluation_epsilon": 0.05,
+  "metrics_file": "metrics.jsonl",
+  "metric_records": 11687,
+  "per_game_scores_file": "evaluations.json",
+  "result_file": "result.json",
+  "evaluation_curve_file": "evaluation_curve.png",
+  "final_evaluation": {
+    "at_frame": 10000000,
+    "mean": -14.866666666666667,
+    "population_std": 3.2427697352040825,
+    "human_normalized_percent": 19.444444444444443
+  },
+  "evaluation_means": [
+    -20.566666666666666,
+    -21.0,
+    -20.966666666666665,
+    -20.2,
+    -20.466666666666665,
+    -16.3,
+    -15.6,
+    -14.5,
+    -12.733333333333333,
+    -14.866666666666667
+  ],
+  "wall_clock_s": 2217.6997358590015,
+  "observed_peak_rss_bytes": 6982660096,
+  "rss_sampling": "TensorBoard rss_bytes every 1000 decision steps, 2500 samples",
+  "checkpoint_sha256": "aaed2754db34bfba3fc4209f56c5dc98501cc3dd46eb7f762cdddac0e38dcf38",
+  "checkpoint_size_bytes": 27006150,
+  "checkpoint_in_git": false,
+  "checkpoint_retrieval": "Copy runs/seed3_cap200k_complete/agent.pt from the training checkout and verify its SHA-256 against this record.",
+  "checkpoint_load_and_replay": {
+    "device": "cuda",
+    "validation_seed": 20003,
+    "episodes": 1,
+    "raw_score": -16.0,
+    "normalized": 15.666666666666664
+  }
+}
